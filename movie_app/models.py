@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse_lazy
+
 
 # python manage.py shell_plus --print-sql
 class Movie(models.Model):
@@ -11,6 +13,9 @@ class Movie(models.Model):
     def __str__(self):
         return f'{self.name} - {self.rating}%'
 
+
+    def get_url(self):
+        return reverse_lazy('one_movie', args=(self.id, ))
 
 
 

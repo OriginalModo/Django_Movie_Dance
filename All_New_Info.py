@@ -476,7 +476,13 @@
  Используется LIKE для запросов с одним условием и REGEXP для запросов с несколькими условиями.   <----  ВАЖНО
 
 
+ # Пример функции взаимодействующей с моделью
 
+ def show_all_movie(request):
+     movies = Movie.objects.all()
+     return render(request, 'movie_app/all_movie.html', context={
+         'movies': movies
+     })
 
 
 
