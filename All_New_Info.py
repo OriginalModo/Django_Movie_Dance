@@ -484,15 +484,52 @@
          'movies': movies
      })
 
+ # Сортировки -rating - минус перед полем значит в обратном порядке
+ def show_all_movie(request):
+     movies = Movie.objects.order_by('-rating', 'budget')          # Сначала по -rating(Убыванию) а потом по budget
+     return render(request, 'movie_app/all_movie.html', context={
+         'movies': movies
+     })
 
 
+ # Обьект F
+ def show_all_movie(request):
+     movies = Movie.objects.order_by(F('rating').desc(nulls_last=True), 'year')  # Так НЕЛЬЗЯ использовать -rating
+     return render(request, 'movie_app/all_movie.html', context={
+         'movies': movies
+     })
+
+ Объект F в Django используется для операций с полями модели прямо на уровне базы данных, без необходимости сначала
+ извлекать данные из БД.
+
+ Использование объекта F позволяет уменьшить количество запросов к базе данных и ускорить операции, так как многие
+ действия выполняются прямо на уровне БД, а не в памяти Python. Это особенно полезно при работе с большими объемами
+ данных или когда требуется высокая производительность.
 
 
+ # Мини-инфо
+ Movie.objects.order_by('name')             # от первой буквы до последней
+ Movie.objects.order_by('-name')            # от последней буквы до первой
+ Movie.objects.order_by('rating')[:5]       # срез
+ Movie.objects.order_by('rating', 'budget') # сортировка по нескольким параметрам, второй параметр учитывается в случае,
+ если у двух объектов одинаковое значение по первому параметру значения null располагаются по умолчанию снизу
+
+ from django.db.models import F
+ Movie.objects.order_by(F('year').asc)                             # сортировка по возрастанию
+ # nulls_last -- null в конце, nulls_first -- null в начале
+ Movie.objects.order_by(F('year').desc(nulls_last=True)            # сортировка по убыванию
+ Movie.objects.order_by(F('year').desc(nulls_last=True, 'rating')  # сортировка по нескольким параметрам
 
 
-
-
-
+ from django.db.models import F, Sum, Max, Min, Avg, Count
+ # Функции агрегации
+ def show_all_movie(request):
+     movies = Movie.objects.order_by(F('rating').desc(nulls_last=True), 'year')
+     agg = movies.aggregate(Avg('budget'), Max('rating'), Min('rating'), Count('id'))
+     return render(request, 'movie_app/all_movie.html', context={
+         'movies': movies,
+         'agg': agg,
+     })
 
 
 

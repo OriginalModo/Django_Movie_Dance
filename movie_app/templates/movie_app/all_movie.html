@@ -6,7 +6,18 @@
 	<h2>Список всех фильмов</h2>
     <ul>
         {% for i in movies %}
-        <li><a href="{{ i.get_url }}">{{ i.name }}</a>, Рейтинг - {{ i.rating }}, Год - {{ i.year|default:'CCC' }} </li>
+        <li><a href="{{ i.get_url }}">{{ i.name }}</a>,
+            Рейтинг - {{ i.rating }},
+            Год - {{ i.year|default:'CCC' }}
+            Бюджет - {{ i.budget }}
+
+        </li>
         {% endfor %}
     </ul>
+
+    <h3>Средний Бюджет - {{ agg.budget__avg }}</h3>
+    <h3>Минимальный рейтинг - {{ agg.rating__min }}</h3>
+    <h3>Максимальный рейтинг - {{ agg.rating__max }}</h3>
+    <h3>Всего фильмов - {{ agg.id__count }}</h3>
+
 {% endblock %}
