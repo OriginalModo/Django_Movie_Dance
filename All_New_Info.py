@@ -607,7 +607,7 @@
              return queryset.filter(rating__gte=40).filter(rating__lt=60)
          return queryset
 
-
+ # Примерные возможности админки   Поле  ManyToManyField не может быть в list_editable и list_display
  @admin.register(Movie)
  class ModelNameAdmin(admin.ModelAdmin):
      prepopulated_fields = {'slug': ('name', )}                             # Авто-заполнение slug в Админке
