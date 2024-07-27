@@ -5,6 +5,12 @@ from django.db.models import QuerySet  # Можно добавлять к анн
 
 admin.site.register(Director)
 admin.site.register(Actor)
+# admin.site.register(DressingRoom)
+
+
+@admin.register(DressingRoom)
+class DressingRoomeAdmin(admin.ModelAdmin):
+    list_display = ['floor', 'number', 'actor']
 
 # Создание фильтра в Django Admin
 class RatingFilter(admin.SimpleListFilter):

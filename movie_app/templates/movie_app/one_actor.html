@@ -12,5 +12,11 @@
         {% else %}
         	<h3>Пол: M</h3>
         {% endif %}
-
+       <h3>Список фильмов</h3>
+       <ul>
+            {% for i in actor.movie_set.all %}
+            <li>
+                {{ i }}
+            </li>
+            {% endfor %}
 {% endblock %}

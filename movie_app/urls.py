@@ -8,5 +8,5 @@ urlpatterns = [
     path('directors/', show_all_directors, name='all_directors'),
     path('directors/<int:dir_id>', show_one_director, name='one_director'),
     path('actors/', show_all_actors, name='all_actors'),
-    path('actors/<int:actor_id>', show_one_actor, name='one_actor'),
+    path('actors/<slug:actor_id>', show_one_actor, name='one_actor'),
 ]

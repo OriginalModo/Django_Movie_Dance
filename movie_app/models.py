@@ -15,7 +15,12 @@ class Director(models.Model):
     def get_url(self):
         return reverse_lazy('one_director', args=(self.id, ))
 
+class DressingRoom(models.Model):
+    floor = models.IntegerField()
+    number = models.IntegerField()
 
+    def __str__(self):
+        return f'{self.floor} {self.number}'
 
 class Actor(models.Model):
     MALE = 'M'
@@ -26,6 +31,7 @@ class Actor(models.Model):
     ]
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    dressing = models.OneToOneField(DressingRoom, on_delete=models.SET_NULL, null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDERS, default=MALE)
 
 
@@ -35,10 +41,12 @@ class Actor(models.Model):
 
         return f'Актриса {self.first_name} - {self.last_name}'
 
+
     def get_url(self):
         return reverse_lazy('one_actor', args=(self.id, ))
 
-# python manage.py shell_plus --print-sql
+
+
 class Movie(models.Model):
     name = models.CharField(max_length=40)
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
@@ -61,3 +69,4 @@ class Movie(models.Model):
 
 
 
+# python manage.py shell_plus --print-sql

@@ -5,6 +5,6 @@
 {% block content %}
     <h1>Список всех Режиссеров</h1>
     {% for i in directors %}
-    	<li><a href="{{ i.get_url }}">{{ i }}</a>,
+    	<li><a href="{{ i.get_url }}">{{ i }}</a>
     {% endfor %}
 {% endblock %}

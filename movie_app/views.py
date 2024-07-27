@@ -52,3 +52,4 @@ def show_all_actors(request):
     return render(request, 'movie_app/all_actors.html', context={
         'actors': actors
     })
+
