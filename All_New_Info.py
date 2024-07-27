@@ -80,6 +80,29 @@
  Подключить приложение в файле Основного проекта urls.py
   path('horoscope/', include('horoscope.urls')),
 
+ # Весь файл urls.py основного проекта
+
+ from django.contrib import admin
+ from django.urls import path, include
+ from debug_toolbar.toolbar import debug_toolbar_urls
+
+ admin.site.site_header = 'Наша Админка'
+ admin.site.index_title = 'Моя Супер Админка'
+
+ urlpatterns = [
+     path('admin/', admin.site.urls),
+     path('', include('movie_app.urls')),
+ ] + debug_toolbar_urls()
+
+ # Весь файл urls.py Приложения
+ from django.urls import path
+ from .views import *
+
+ urlpatterns = [
+     path('', show_all_movie),
+     path('movie/<slug:slug_movie>', show_one_movie, name='one_movie'),
+ ]
+
 
  Конвертеры роутов Расположение важно Обработка роутов идет сверху вниз: Динамические url
  path(r'<str:sign_zodiac>/', get_info_sign_horoscope),            # Тип Строка
@@ -532,11 +555,83 @@
      })
 
 
+ # В файле models.py
+ from django.db import models
+ from django.urls import reverse_lazy
+ from django.utils.text import slugify
+
+ # Создание полей в Базе Данных
+ class Movie(models.Model):
+     name = models.CharField(max_length=40)
+     rating = models.IntegerField()
+     year = models.IntegerField(null=True)
+     budget = models.IntegerField(default=1_000_000)
+     slug = models.SlugField(default='', null=False, db_index=True)
+
+     def save(self, *args, **kwargs):
+         self.slug = slugify(self.name)
+         super().save(*args, **kwargs)
+
+     def __str__(self):
+         return f'{self.name} - {self.rating}%'
+
+     def get_url(self):
+         return reverse_lazy('one_movie', args=(self.slug, ))
 
 
+  # В файле admin.py
+
+  # Регистрация Модели в Админке
+ from django.contrib import admin
+ from .models import *
+ from django.db.models import QuerySet  # Можно добавлять к аннотациям
 
 
+ # Создание фильтра в Django Admin
+ class RatingFilter(admin.SimpleListFilter):
+     title = 'Фильтр по рейтингу'
+     parameter_name = 'rating'
 
+     def lookups(self, request, model_admin):
+         return [
+             ('<40', 'Низкий'),
+             ('от 40 до 59', 'Средний'),
+             ('от 60 до 79', 'Высокий'),
+             ('>=80', 'Высочайший'),
+         ]
+
+     def queryset(self, request, queryset: QuerySet):
+         if self.value() == '<40':
+             return queryset.filter(rating__lt=40)
+         if self.value() == 'от 40 до 59':
+             return queryset.filter(rating__gte=40).filter(rating__lt=60)
+         return queryset
+
+
+ @admin.register(Movie)
+ class ModelNameAdmin(admin.ModelAdmin):
+     prepopulated_fields = {'slug': ('name', )}                             # Авто-заполнение slug в Админке
+     fields = ['name', 'rating', 'year', 'slug']                            # Какие поля можно добавлять в Админке
+     # exclude = ['name', 'rating']                                         # Тоже самое но исключаем
+     # readonly_fields = ['name']                                           # Только для чтения поля
+     list_display = ['name', 'rating', 'year', 'budget', 'rating_status']   # Какие поля будут отображатся в Админке
+     list_editable = ['rating', 'year', 'budget']                           # Какие поля можно редактировать в Админке
+     ordering = ['-rating', 'name']                                         # По Каким полям будет Сортировка в Админке
+     search_fields = ['name__startswith', 'rating']     # Создание поисковой панели в Админке Можно использовать lookups
+     list_filter = ['name', RatingFilter]                                   # фильтрация Можно добавить самописный класс
+
+     # Можно добавлять методы в list_display
+     @admin.display(ordering='rating', description='status')
+     def rating_status(self, movie: Movie):
+         match movie.rating:
+             case x if movie.rating < 50:
+                 return 'Зачем это смотреть'
+             case x if movie.rating < 70:
+                 return 'Разок можно глянуть'
+             case x if movie.rating <= 85:
+                 return 'Зачет'
+             case _:
+                 return 'Топчик'
 
 
 
