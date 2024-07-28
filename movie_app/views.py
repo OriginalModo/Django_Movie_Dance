@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import *
 from django.db.models import F, Sum, Max, Min, Avg, Count, Value
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, FormView, UpdateView, DeleteView, CreateView
 
 
 def show_all_movie(request):

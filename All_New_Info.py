@@ -636,7 +636,7 @@
 
  ListView, DetailView
 
- # from django.views.generic import ListView, DetailView
+ # from django.views.generic import ListView, DetailView, FormView, UpdateView, DeleteView, CreateView
 
  # Django Находить одну запись и сохраняет её по модели в нижнем регистре
  class DetailFeedback(DetailView):
@@ -671,20 +671,91 @@
  path('detail/<int:pk>', DetailView.as_view(model=Feedback)),
 
 
+ # Формы прописываются в файле forms
+ from django import forms
+ from .models import *
+
+ # Класс ModelForm
+ class FeedbackForm(forms.ModelForm):
+     class Meta:
+         model = Feedback
+         # fields = ['name', 'surname']
+         fields = '__all__'
+         # exclude = ['name']
+         labels = {
+             'name': 'Имя',
+             'surname': 'Фамилия',
+             'feedback': 'Отзыв',
+             'rating': 'Рейтинг',
+         }
+         error_messages = {
+                  'name': {
+                      'max_length': 'Слишком много симваолов',
+                      'min_length': 'Слишком мало симваолов',
+                      'required': 'Хотя бы 1 символ',
+                  },
+                 'surname': {
+                     'max_length': 'Слишком много симваолов',
+                     'min_length': 'Слишком мало симваолов',
+                     'required': 'Хотя бы 1 символ',
+                 },
+              }
 
 
 
+ # Для СОЗДАНИЯ записей в БД через Форму    CreateView
+
+ # Переменная для шаблона html по дефолту будет  form
+ class FeedbackView(CreateView):
+     model = Feedback
+     form_class = FeedbackForm                      # Лучше использовать form_class
+     # fields = '__all__'
+     template_name = 'feedback/feedback.html'
+     success_url = '/done'                          # Куда перенаправлятся
 
 
+ # Для ОБНОВЛЕНИЯ записей в БД через Форму    UpdateView
+ class FeedbackViewUpdate(UpdateView):
+     model = Feedback
+     form_class = FeedbackForm
+     template_name = 'feedback/feedback.html'
+     success_url = '/done'
 
 
+ # Для УДАЛЕНИЯ записей в БД через Форму    UpdateView
+ class FeedbackViewDelete(DeleteView):
+     model = Feedback
+     success_url = reverse_lazy('/list')
+     template_name = 'feedback/feedback_delete.html'
+
+ # Роуты можно прописывать в urls.py  сразу так
+ path('delete/<int:pk>', DeleteView.as_view(model=Feedback, template_name='feedback/feedback_delete.html',
+                                           success_url='/list')),
 
 
+ Для загрузки файлов
+
+ class Gallery(models.Model):
+    image = models.FileField(upload_to='media')
 
 
+ В settings для загрузки файлов
 
+ MEDIA_ROOT = BASE_DIR / 'uploads'
+ MEDIA_URL = '/my_media/'
 
+ В urls корня проекта для загрузки файлов
 
+ from django.contrib import admin
+ from django.urls import path, include
+ from django.conf import settings
+ from django.conf.urls.static import static
+
+ urlpatterns = [
+     path('admin/', admin.site.urls),
+     path('', include('feedback.urls')),
+     path('', include('gallery.urls')),
+ ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 
