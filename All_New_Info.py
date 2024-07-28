@@ -634,11 +634,35 @@
                  return 'Топчик'
 
 
+ ListView, DetailView
+
+ # from django.views.generic import ListView, DetailView
+
+ # Django Находить одну запись и сохраняет её по модели в нижнем регистре
+ class DetailFeedback(DetailView):
+     template_name = 'feedback/detail_feedback.html'  # По дефолту будет шаблон   имя приложения / имя модели_detail.html
+     model = Feedback  # Переписывает для шаблона html в нижний регистр feedback
+     context_object_name = 'fee'  # По дефолту будет переменная object
 
 
+ class ListFeedback(ListView):
+     template_name = 'feedback/list_feedback.html'  # По дефолту будет шаблон      имя приложения / имя модели_list.html
+     model = Feedback
+     context_object_name = 'feedbacks'  # По дефолту будет переменная object_list
 
+     # Фильтрация записей
+     def get_queryset(self):
+         qs = super().get_queryset()
+         filter_qs = qs.filter(rating__gt=2)
+         return filter_qs
 
+ Роуты
+ urlpatterns = [
+    path('list', ListFeedback.as_view()),
+    path('detail/<int:pk>', DetailFeedback.as_view()),  # Прописываем pk или slug
+]
 
+ Или Сразу Указывае в Роуте без создание классов во views
 
 
 

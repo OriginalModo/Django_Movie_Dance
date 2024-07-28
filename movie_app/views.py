@@ -55,16 +55,30 @@ def show_all_actors(request):
     })
 
 
-class DirectorView(ListView):
+class DirectorList(ListView):
     template_name = 'movie_app/all_directors.html'
     model = Director
     context_object_name = 'directors'
 
 
-class ActorView(ListView):
+class ActorList(ListView):
     template_name = 'movie_app/all_actors.html'
     model = Actor
     context_object_name = 'actors'
+
+
+class DirectorDetail(DetailView):
+    template_name = 'movie_app/one_director.html'
+    model = Director
+    context_object_name = 'director'
+
+
+class ActorDetail(DetailView):
+    template_name = 'movie_app/one_actor.html'
+    model = Actor
+    context_object_name = 'actor'
+
+
 
 
 

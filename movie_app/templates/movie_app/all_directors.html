@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1>Список всех Режиссеров</h1>
-    {% for i in directors %}
+    {% for i in object_list %}
     	<li><a href="{{ i.get_url }}">{{ i }}</a>
     {% endfor %}
 {% endblock %}
