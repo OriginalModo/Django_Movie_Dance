@@ -662,9 +662,13 @@
     path('detail/<int:pk>', DetailFeedback.as_view()),  # Прописываем pk или slug
 ]
 
- Или Сразу Указывае в Роуте без создание классов во views
+ # Или Сразу Указываем в Роуте без создание классов во views
+ path('list', ListView.as_view(model=Feedback, template_name='feedback/feedback_list.html')),
+ path('detail/<int:pk>', DetailView.as_view(model=Feedback, template_name='feedback/feedback_detail.html')),
 
-
+ # Можно без указание template_name  если правильно назвать html
+ path('list', ListView.as_view(model=Feedback)),
+ path('detail/<int:pk>', DetailView.as_view(model=Feedback)),
 
 
 
