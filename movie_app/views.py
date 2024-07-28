@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import *
 from django.db.models import F, Sum, Max, Min, Avg, Count, Value
+from django.views.generic import ListView, DetailView
 
 
 def show_all_movie(request):
@@ -52,4 +53,41 @@ def show_all_actors(request):
     return render(request, 'movie_app/all_actors.html', context={
         'actors': actors
     })
+
+
+class DirectorView(ListView):
+    template_name = 'movie_app/all_directors.html'
+    model = Director
+    context_object_name = 'directors'
+
+
+class ActorView(ListView):
+    template_name = 'movie_app/all_actors.html'
+    model = Actor
+    context_object_name = 'actors'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
